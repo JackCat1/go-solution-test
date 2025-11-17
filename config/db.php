@@ -1,14 +1,12 @@
 <?php
 
+$dbPath = dirname(__DIR__) . '/data/database.db';
+
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=yii2basic',
-    'username' => 'root',
-    'password' => '',
+    'dsn' => 'sqlite:' . $dbPath,
+    // 'dsn' => 'mysql:host=localhost;dbname=example',
+    // 'username' => 'root',
+    // 'password' => '',
     'charset' => 'utf8',
-
-    // Schema cache options (for production environment)
-    //'enableSchemaCache' => true,
-    //'schemaCacheDuration' => 60,
-    //'schemaCache' => 'cache',
 ];
