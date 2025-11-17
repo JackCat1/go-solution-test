@@ -1,5 +1,10 @@
 <?php
 
+use app\components\JwtService;
+use yii\rest\UrlRule;
+use yii\web\JsonParser;
+use yii\web\Response;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -13,15 +18,24 @@ $config = [
     ],
     'components' => [
         'request' => [
-            // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'twHZo2OtTdADB9wz_a_Di5sGnkHOnLxN',
+            'enableCsrfValidation' => false,
+            'parsers' => [
+                'application/json' => JsonParser::class,
+            ],
+        ],
+        'response' => [
+            'format' => Response::FORMAT_JSON,
+            'charset' => 'UTF-8',
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
             'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
+            'enableAutoLogin' => false,
+            'enableSession' => false,
+            'loginUrl' => null,
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -29,7 +43,6 @@ $config = [
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,
             'viewPath' => '@app/mail',
-            // send all mails to a file by default.
             'useFileTransport' => true,
         ],
         'log' => [
@@ -42,14 +55,37 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
+        'jwt' => [
+            'class' => JwtService::class,
+            'secret' => $params['jwtSecret'],
+            'issuer' => $params['jwtIssuer'],
+            'ttl' => $params['jwtTtl'],
+        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                [
+                    'class' => UrlRule::class,
+                    'controller' => ['book'],
+                    'only' => ['index', 'view', 'create', 'update', 'delete'],
+                ],
+                [
+                    'class' => UrlRule::class,
+                    'controller' => ['user'],
+                    'only' => ['create', 'view'],
+                ],
+                [
+                    'class' => UrlRule::class,
+                    'controller' => ['auth'],
+                    'pluralize' => false,
+                    'extraPatterns' => [
+                        'POST login' => 'login',
+                    ],
+                    'patterns' => [],
+                ],
             ],
         ],
-        */
     ],
     'params' => $params,
 ];
